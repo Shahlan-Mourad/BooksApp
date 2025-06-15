@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using BookApp.API.Data;
 using BookApp.API.Models;
+using BookApp.API.DTOs;
 using System.Security.Claims;
 
 namespace BookApp.API.Controllers
@@ -19,41 +20,59 @@ namespace BookApp.API.Controllers
             _context = context;
         }
 
-        // GET: api/Quotes
+        /// <summary>
+        /// Get all quotes for the current user.
+        /// </summary>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Quote>>> GetQuotes()
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            return await _context.Quotes
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "Invalid user" });
+
+            var quotes = await _context.Quotes
                 .Include(q => q.User)
                 .Include(q => q.Book)
                 .Where(q => q.UserId == userId)
                 .ToListAsync();
+
+            return quotes;
         }
 
-        // GET: api/Quotes/5
+        /// <summary>
+        /// Get a quote by id for the current user.
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<Quote>> GetQuote(int id)
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "Invalid user" });
+
             var quote = await _context.Quotes
                 .Include(q => q.User)
                 .Include(q => q.Book)
                 .FirstOrDefaultAsync(q => q.Id == id && q.UserId == userId);
 
             if (quote == null)
-            {
-                return NotFound();
-            }
+                return NotFound(new { message = "Quote not found" });
 
             return quote;
         }
 
-        // POST: api/Quotes
+        /// <summary>
+        /// Create a new quote for the current user.
+        /// </summary>
         [HttpPost]
-        public async Task<ActionResult<Quote>> CreateQuote(Quote quote)
+        public async Task<ActionResult<Quote>> CreateQuote([FromBody] Quote quote)
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "Invalid user" });
+
             quote.UserId = userId;
             quote.CreatedAt = DateTime.UtcNow;
             quote.UpdatedAt = DateTime.UtcNow;
@@ -64,30 +83,36 @@ namespace BookApp.API.Controllers
             return CreatedAtAction(nameof(GetQuote), new { id = quote.Id }, quote);
         }
 
-        // PUT: api/Quotes/5
+        /// <summary>
+        /// Update an existing quote for the current user.
+        /// </summary>
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateQuote(int id, Quote quote)
+        public async Task<IActionResult> UpdateQuote(int id, [FromBody] Quote quote)
         {
-            if (id != quote.Id)
-            {
-                return BadRequest();
-            }
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            if (id != quote.Id)
+                return BadRequest(new { message = "Incorrect ID" });
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "Invalid user" });
+
             var existingQuote = await _context.Quotes.FindAsync(id);
 
             if (existingQuote == null)
-            {
-                return NotFound();
-            }
+                return NotFound(new { message = "Quote not found" });
 
             if (existingQuote.UserId != userId)
-            {
                 return Forbid();
-            }
 
-            quote.UpdatedAt = DateTime.UtcNow;
-            _context.Entry(existingQuote).CurrentValues.SetValues(quote);
+            // Uppdatera endast tillåtna fält
+            existingQuote.Text = quote.Text;
+            existingQuote.Author = quote.Author;
+            existingQuote.BookId = quote.BookId;
+            existingQuote.IsFavorite = quote.IsFavorite;
+            existingQuote.UpdatedAt = DateTime.UtcNow;
 
             try
             {
@@ -96,34 +121,31 @@ namespace BookApp.API.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!QuoteExists(id))
-                {
-                    return NotFound();
-                }
+                    return NotFound(new { message = "Quote not found" });
                 else
-                {
                     throw;
-                }
             }
 
             return NoContent();
         }
 
-        // DELETE: api/Quotes/5
+        /// <summary>
+        /// Delete a quote for the current user.
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteQuote(int id)
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "Invalid user" });
+
             var quote = await _context.Quotes.FindAsync(id);
 
             if (quote == null)
-            {
-                return NotFound();
-            }
+                return NotFound(new { message = "Quote not found" });
 
             if (quote.UserId != userId)
-            {
                 return Forbid();
-            }
 
             _context.Quotes.Remove(quote);
             await _context.SaveChangesAsync();
@@ -131,22 +153,23 @@ namespace BookApp.API.Controllers
             return NoContent();
         }
 
-        // PUT: api/Quotes/5/toggle-favorite
+        /// <summary>
+        /// Toggle favorite status for a quote.
+        /// </summary>
         [HttpPut("{id}/toggle-favorite")]
         public async Task<IActionResult> ToggleFavorite(int id)
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "Invalid user" });
+
             var quote = await _context.Quotes.FindAsync(id);
 
             if (quote == null)
-            {
-                return NotFound();
-            }
+                return NotFound(new { message = "Quote not found" });
 
             if (quote.UserId != userId)
-            {
                 return Forbid();
-            }
 
             quote.IsFavorite = !quote.IsFavorite;
             quote.UpdatedAt = DateTime.UtcNow;
@@ -161,4 +184,4 @@ namespace BookApp.API.Controllers
             return _context.Quotes.Any(e => e.Id == id);
         }
     }
-} 
+}

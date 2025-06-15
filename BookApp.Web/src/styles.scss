@@ -1,0 +1,309 @@
+/* You can add global styles to this file, and also import other style files */
+
+:root {
+  --background-color: #F9FCFF;
+  --text-color: #333333;
+  --text-muted-color: #555;
+  --nav-footer-bg: #E7F1FF;
+  --primary-color: #D0E3FF;
+  --primary-hover-color: #7096D1;
+  --card-bg: #ffffff;
+  --card-border-color: rgba(0, 0, 0, 0.125);
+  --hover-bg: #f8f9fa;
+  --focus-box-shadow-color: rgba(208, 227, 255, 0.5);
+
+  /* Bootstrap variables override */
+  --bs-body-bg: var(--background-color);
+  --bs-body-color: var(--text-color);
+  --bs-border-color: var(--card-border-color);
+  --bs-primary: var(--primary-color);
+  --bs-primary-rgb: 208, 227, 255; /* RGB of #D0E3FF */
+}
+
+[data-theme="dark"] {
+  --background-color: #1a1a1a;
+  --text-color: #ffffff;
+  --text-muted-color: #cccccc;
+  --nav-footer-bg: #2d2d2d; /* Using card-bg from dark theme for nav/footer */
+  --primary-color: #6a5acd; /* Example dark mode primary color */
+  --primary-hover-color: #8a7acd; /* Example dark mode primary hover */
+  --card-bg: #2d2d2d;
+  --card-border-color: #404040;
+  --hover-bg: #3d3d3d;
+  --focus-box-shadow-color: rgba(106, 90, 205, 0.5); /* Adjusted for dark mode primary */
+
+  /* Bootstrap variables override for dark mode */
+  --bs-primary-rgb: 106, 90, 205; /* RGB of #6a5acd */
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+}
+
+main {
+  flex: 1;
+}
+
+/* Ensure all headings and paragraph text use the --text-color variable */
+h1, h2, h3, h4, h5, h6, p {
+  color: var(--text-color);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .container-fluid {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  
+  .card {
+    margin-bottom: 1rem;
+  }
+  
+  .btn-group {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .btn-group .btn {
+    margin-bottom: 0.25rem;
+  }
+  
+  .navbar-brand {
+    font-size: 1.1rem;
+  }
+  
+  .navbar-nav {
+    text-align: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .col-md-6 {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .btn {
+    font-size: 0.9rem;
+    padding: 0.375rem 0.75rem;
+  }
+  
+  .form-control {
+    font-size: 0.9rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  h5 {
+    font-size: 1.1rem;
+  }
+}
+
+/* Custom styles for better UX */
+.book-card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.book-card:hover {
+  transform: translateY(-2px);
+}
+
+.quote-card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.quote-card:hover {
+  transform: translateY(-2px);
+}
+
+.favorite-book-card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.favorite-book-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Loading spinner styles */
+.spinner-border {
+  width: 1rem;
+  height: 1rem;
+  color: var(--primary-color) !important;
+}
+
+/* Form validation styles */
+.form-control.is-invalid {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.form-control.is-valid {
+  border-color: #198754;
+  box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+}
+
+/* Alert styles */
+.alert {
+  border-radius: 0.375rem;
+  border: 1px solid transparent;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+  color: #721c24;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+  color: #155724;
+}
+
+/* Button styles */
+.btn {
+  border-radius: 0.375rem;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--text-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover-color);
+  border-color: var(--primary-hover-color);
+  color: #fff;
+}
+
+.btn-outline-primary {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+
+  &:hover {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border-color: var(--primary-color);
+  }
+}
+
+.btn-outline-secondary {
+  color: #6c757d;
+  border-color: #6c757d;
+
+  &:hover {
+    background-color: #6c757d;
+    color: #fff;
+    border-color: #6c757d;
+  }
+}
+
+.btn-warning {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--text-color);
+}
+
+.btn-warning:hover {
+  background-color: var(--primary-hover-color);
+  border-color: var(--primary-hover-color);
+  color: #fff;
+}
+
+/* Card styles */
+.card {
+  background-color: var(--card-bg);
+  border-color: var(--card-border-color);
+  color: var(--text-color);
+  border-radius: 0.5rem;
+  border: 1px solid var(--card-border-color);
+}
+
+.card-header {
+  border-bottom: 1px solid var(--card-border-color);
+  border-radius: 0.5rem 0.5rem 0 0 !important;
+  background-color: var(--nav-footer-bg);
+  color: var(--text-color);
+}
+
+/* Navbar styles */
+.navbar {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+  font-weight: 600;
+}
+
+/* Dropdown styles */
+.dropdown-menu {
+  border-radius: 0.375rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.dropdown-item:hover {
+  background-color: var(--hover-bg);
+}
+
+/* Badge styles */
+.badge {
+  font-size: 0.75em;
+  font-weight: 500;
+  background-color: var(--primary-color) !important;
+  color: var(--text-color);
+}
+
+/* Blockquote styles */
+.blockquote {
+  border-left: 4px solid var(--primary-color);
+  padding-left: 1rem;
+  margin-left: 0;
+}
+
+.blockquote-footer {
+  font-size: 0.875em;
+  color: var(--text-muted-color);
+}
+
+/* Accessibility improvements */
+.btn:focus,
+.form-control:focus {
+  box-shadow: 0 0 0 0.2rem var(--focus-box-shadow-color);
+}
+
+/* Adjust text color for muted text */
+.text-muted {
+  color: var(--text-muted-color) !important;
+}
+
+/* Print styles */
+@media print {
+  .navbar,
+  .btn,
+  .form-control {
+    display: none !important;
+  }
+  
+  .card {
+    border: 1px solid #000;
+    box-shadow: none;
+  }
+}

@@ -1,0 +1,52 @@
+.card {
+  border-radius: 15px;
+  border: none;
+}
+
+.btn {
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.alert {
+  border-radius: 10px;
+  border: none;
+}
+
+.spinner-border {
+  width: 2rem;
+  height: 2rem;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  
+}
+
+// Custom scrollbar for long descriptions
+.card-text {
+  max-height: 100px;
+  overflow-y: auto;
+  
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: var(--card-bg);
+    border-radius: 2px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: var(--text-muted-color);
+    border-radius: 2px;
+    
+    &:hover {
+      background: var(--text-color);
+    }
+  }
+} 

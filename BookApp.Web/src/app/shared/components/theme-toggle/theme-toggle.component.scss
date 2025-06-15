@@ -1,0 +1,34 @@
+.theme-toggle-btn {
+  position: fixed !important;
+  top: 0.8rem !important;
+  right: 4rem !important;
+  z-index: 1000;
+  color: transparent; /* Make button text/icon color controlled by child rule */
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background-color 0.3s ease, color 0.3s ease; 
+  border: none;
+  background-color: transparent; /* Ensure button itself has no background */
+  display: inline-block; /* Ensure it behaves like a block element for positioning */
+  margin: 0; /* Remove any default margin */
+  will-change: top, right; /* Hint for browser optimization */
+}
+
+.theme-toggle-btn svg,
+.theme-toggle-btn i {
+    color: var(--text-color); /* Explicitly set icon color */
+    transition: color 0.3s ease; /* Smooth color transition for the icon */
+}
+
+[data-theme="dark"] .theme-toggle-btn {
+  background-color: rgba(255, 255, 255, 0.05); /* subtle background in dark mode on hover/active */
+}
+
+.theme-toggle-btn:hover {
+  background-color: var(--hover-bg);
+}
+
+/* Ensure theme toggle button is above the navbar */
+.navbar {
+  z-index: 999; /* Slightly lower than theme toggle's z-index */
+} 

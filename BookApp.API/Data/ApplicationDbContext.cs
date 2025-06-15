@@ -19,7 +19,7 @@ namespace BookApp.API.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Konfigurera unika index
+            // Unique indexes for users and books
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Username)
                 .IsUnique();
@@ -32,7 +32,12 @@ namespace BookApp.API.Data
                 .HasIndex(b => b.ISBN)
                 .IsUnique();
 
-            // Konfigurera relationer för UserFavoriteBook
+            // Composite key for UserFavoriteBook to prevent duplicates
+            modelBuilder.Entity<UserFavoriteBook>()
+                .HasIndex(ufb => new { ufb.UserId, ufb.BookId })
+                .IsUnique();
+
+            // Relationships for User Favorite Book
             modelBuilder.Entity<UserFavoriteBook>()
                 .HasOne(ufb => ufb.User)
                 .WithMany(u => u.FavoriteBooks)
@@ -45,7 +50,7 @@ namespace BookApp.API.Data
                 .HasForeignKey(ufb => ufb.BookId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Konfigurera relationer för Quote
+            // Relationships for Quote
             modelBuilder.Entity<Quote>()
                 .HasOne(q => q.User)
                 .WithMany(u => u.Quotes)
@@ -58,7 +63,7 @@ namespace BookApp.API.Data
                 .HasForeignKey(q => q.BookId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Konfigurera relationer för Book
+            // Relationship for Book -> Added By User
             modelBuilder.Entity<Book>()
                 .HasOne(b => b.AddedByUser)
                 .WithMany(u => u.AddedBooks)
@@ -66,4 +71,4 @@ namespace BookApp.API.Data
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }
-} 
+}

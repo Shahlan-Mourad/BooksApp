@@ -1,0 +1,82 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow">
+        <div class="card-header">
+          <h3 class="mb-0">
+            <i class="fas fa-user-circle me-2"></i>{{ currentUser?.username || 'Profile' }}
+          </h3>
+        </div>
+        <div class="card-body">
+          <div *ngIf="currentUser; else noUser" class="user-profile">
+            <!-- Profile Picture Placeholder -->
+            <div class="text-center mb-4">
+              <div class="profile-picture">
+                <i class="fas fa-user fa-4x text-muted"></i>
+              </div>
+            </div>
+            
+            <!-- User Information -->
+            <div class="user-info">
+              <div class="row mb-3">
+                <div class="col-sm-4">
+                  <strong><i class="fas fa-user me-2"></i>Username:</strong>
+                </div>
+                <div class="col-sm-8">
+                  {{ currentUser.username }}
+                </div>
+              </div>
+              
+              <div class="row mb-3" *ngIf="currentUser.firstName">
+                <div class="col-sm-4">
+                  <strong><i class="fas fa-id-card me-2"></i>First Name:</strong>
+                </div>
+                <div class="col-sm-8">
+                  {{ currentUser.firstName }}
+                </div>
+              </div>
+              
+              <div class="row mb-3" *ngIf="currentUser.lastName">
+                <div class="col-sm-4">
+                  <strong><i class="fas fa-id-card me-2"></i>Last Name:</strong>
+                </div>
+                <div class="col-sm-8">
+                  {{ currentUser.lastName }}
+                </div>
+              </div>
+              
+              <div class="row mb-3">
+                <div class="col-sm-4">
+                  <strong><i class="fas fa-envelope me-2"></i>Email:</strong>
+                </div>
+                <div class="col-sm-8">
+                  {{ currentUser.email }}
+                </div>
+              </div>
+              
+              <div class="row mb-3" *ngIf="currentUser.id">
+                <div class="col-sm-4">
+                  <strong><i class="fas fa-fingerprint me-2"></i>User ID:</strong>
+                </div>
+                <div class="col-sm-8">
+                  {{ currentUser.id }}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <ng-template #noUser>
+            <div class="text-center py-4">
+              <i class="fas fa-user-slash fa-3x text-muted mb-3"></i>
+              <h5 class="text-muted">No User Information</h5>
+              <p class="text-muted">Please log in to view your profile information.</p>
+              <button class="btn btn-primary">
+                <i class="fas fa-sign-in-alt me-2"></i>Go to Login
+              </button>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

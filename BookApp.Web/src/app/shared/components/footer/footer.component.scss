@@ -1,0 +1,62 @@
+.footer {
+  background-color: var(--nav-footer-bg); /* Use CSS variable */
+  color: var(--text-color); /* Use CSS variable */
+  border-top: 1px solid var(--card-border-color); /* Use CSS variable */
+  padding: 2rem 0;
+}
+
+.developer-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  @media (min-width: 768px) {
+    align-items: flex-start;
+  }
+}
+
+.profile-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary-color); /* Use CSS variable */
+}
+
+.developer-info h5 {
+  color: var(--text-color); /* Use CSS variable */
+  font-weight: 600;
+}
+
+.developer-info p {
+  color: var(--text-muted-color); /* Use CSS variable */
+  font-size: 0.9rem;
+}
+
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem; /* Space between icons */
+
+  @media (min-width: 768px) {
+    justify-content: center; /* Center for medium and larger screens */
+  }
+}
+
+.social-link {
+  color: var(--text-muted-color); /* Use CSS variable */
+  transition: color 0.3s ease-in-out;
+
+  &:hover {
+    color: var(--primary-hover-color); /* Use CSS variable */
+  }
+}
+
+.footer small {
+  color: var(--text-muted-color) !important; /* Use CSS variable */
+}
+
+.footer p {
+  margin-bottom: 0;
+  line-height: 1.5;
+} 

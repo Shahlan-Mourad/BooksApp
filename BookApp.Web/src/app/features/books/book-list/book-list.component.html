@@ -1,0 +1,116 @@
+<div class="container-fluid">
+  <!-- Header Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">
+          <i class="fas fa-book me-2"></i>Book Library
+        </h2>
+        <div class="d-flex align-items-center">
+          <!-- Search Container -->
+          <div class="search-container me-3">
+            <div class="search-input-wrapper" [class.expanded]="isSearchVisible">
+              <input
+                type="text"
+                class="form-control search-input"
+                placeholder="Search by title, author, or ISBN..."
+                [(ngModel)]="searchTerm"
+                (input)="onSearchChange()"
+                id="searchInput"
+                *ngIf="isSearchVisible"
+              >
+              <button 
+                class="btn btn-outline-secondary search-icon-btn" 
+                (click)="toggleSearch()"
+                [class.active]="isSearchVisible"
+                title="Search books"
+              >
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Add Book Button -->
+          <button 
+            class="btn btn-primary" 
+            (click)="addBook()"
+          >
+            <i class="fas fa-plus me-2"></i>
+            Add Book
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div class="row mb-3" *ngIf="errorMessage">
+    <div class="col-12">
+      <div class="alert alert-danger" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>{{ errorMessage }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="row" *ngIf="isLoading">
+    <div class="col-12 text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2">Loading books...</p>
+    </div>
+  </div>
+
+  <!-- Books Grid -->
+  <div class="row" *ngIf="!isLoading">
+    <div class="col-12" *ngIf="filteredBooks.length === 0 && !isLoading">
+      <div class="text-center py-5">
+        <i class="fas fa-book fa-3x text-muted mb-3"></i>
+        <h4 class="text-muted">No books found</h4>
+        <p class="text-muted">Try adjusting your search criteria or add a new book.</p>
+      </div>
+    </div>
+    
+    <div class="col-lg-4 col-md-6 mb-4" *ngFor="let book of filteredBooks">
+      <app-book-card
+        [book]="book"
+        (deleteBook)="deleteBook($event)"
+        (viewBook)="viewBook($event)"
+        (editBook)="editBook($event)"
+      ></app-book-card>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deleteConfirmModalLabel">
+          <i class="fas fa-exclamation-triangle me-2"></i>Delete Book
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-0">
+          Are you sure you want to delete <strong>"{{ bookToDelete?.title }}"</strong> by <strong>{{ bookToDelete?.author }}</strong>?
+        </p>
+        <p class="text-muted small mt-2 mb-0">
+          <i class="fas fa-info-circle me-1"></i>This action cannot be undone.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fas fa-times me-2"></i>Cancel
+        </button>
+        <button type="button" class="btn btn-danger" (click)="confirmDelete()" [disabled]="isLoading">
+          <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+          <i *ngIf="!isLoading" class="fas fa-trash me-2"></i>
+          {{ isLoading ? 'Deleting...' : 'Delete Book' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div> 

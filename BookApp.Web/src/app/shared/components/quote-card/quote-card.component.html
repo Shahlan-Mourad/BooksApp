@@ -1,0 +1,21 @@
+<div class="card h-100 shadow-sm quote-card">
+  <div class="card-body d-flex flex-column">
+    <div class="mb-3">
+      <span class="badge bg-primary mb-2">{{ quote.category }}</span>
+    </div>
+    
+    <blockquote class="blockquote mb-3 flex-grow-1">
+      <p class="mb-0">
+        <i class="fas fa-quote-left text-muted me-2"></i>
+        {{ quote.text }}
+        <i class="fas fa-quote-right text-muted ms-2"></i>
+      </p>
+    </blockquote>
+    
+    <footer class="blockquote-footer text-end">
+      <cite title="Source Title">
+        <i class="fas fa-user me-1"></i>{{ quote.author }}
+      </cite>
+    </footer>
+  </div>
+</div> 

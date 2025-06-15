@@ -1,0 +1,55 @@
+.user-profile {
+  .profile-picture {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: var(--nav-footer-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    border: 3px solid var(--card-border-color);
+    
+    i {
+      color: var(--text-muted-color);
+    }
+  }
+  
+  .user-info {
+    .row {
+      border-bottom: 1px solid var(--card-border-color);
+      padding: 10px 0;
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      .col-sm-4 {
+        color: var(--text-color);
+        font-weight: 500;
+      }
+      
+      .col-sm-8 {
+        color: var(--text-color);
+        font-weight: 400;
+      }
+    }
+  }
+}
+
+.card {
+  border: none;
+  border-radius: 15px;
+  overflow: hidden;
+  
+  .card-header {
+    border-bottom: none;
+    padding: 1.5rem;
+    background-color: var(--nav-footer-bg);
+    color: var(--text-color);
+  }
+  
+  .card-body {
+    padding: 2rem;
+  }
+} 

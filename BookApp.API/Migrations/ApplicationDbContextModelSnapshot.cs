@@ -32,7 +32,6 @@ namespace BookApp.API.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CoverImageUrl")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
@@ -66,7 +65,7 @@ namespace BookApp.API.Migrations
                     b.HasIndex("ISBN")
                         .IsUnique();
 
-                    b.ToTable("Books");
+                    b.ToTable("Books", (string)null);
                 });
 
             modelBuilder.Entity("BookApp.API.Models.Quote", b =>
@@ -105,7 +104,7 @@ namespace BookApp.API.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Quotes");
+                    b.ToTable("Quotes", (string)null);
                 });
 
             modelBuilder.Entity("BookApp.API.Models.User", b =>
@@ -154,7 +153,7 @@ namespace BookApp.API.Migrations
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("BookApp.API.Models.UserFavoriteBook", b =>
@@ -178,7 +177,7 @@ namespace BookApp.API.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserFavoriteBooks");
+                    b.ToTable("UserFavoriteBooks", (string)null);
                 });
 
             modelBuilder.Entity("BookApp.API.Models.Book", b =>

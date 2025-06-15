@@ -1,0 +1,91 @@
+.book-cover-placeholder {
+  background: linear-gradient(135deg, var(--background-color) 0%, var(--nav-footer-bg) 100%);
+  border-radius: 15px;
+  padding: 2rem;
+  border: 2px dashed var(--primary-color);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    border-color: var(--primary-hover-color);
+    background: linear-gradient(135deg, var(--nav-footer-bg) 0%, var(--primary-color) 100%);
+  }
+}
+
+.card {
+  border: none;
+  border-radius: 15px;
+}
+
+.card-header {
+  border-radius: 15px 15px 0 0 !important;
+}
+
+.form-control, .form-select {
+  border-radius: 10px;
+  border: 2px solid var(--card-border-color);
+  transition: all 0.3s ease;
+  
+  &:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem var(--focus-box-shadow-color);
+  }
+}
+
+.btn {
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.btn-group .btn {
+  border-radius: 10px;
+  margin-right: 5px;
+  
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.alert {
+  border-radius: 10px;
+  border: none;
+}
+
+.spinner-border {
+  width: 2rem;
+  height: 2rem;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .btn-group {
+    flex-direction: column;
+    
+    .btn {
+      margin-bottom: 0.25rem;
+      margin-right: 0;
+    }
+  }
+  
+  .book-cover-placeholder {
+    padding: 1rem;
+  }
+}
+
+// Custom styling for book details
+.row .col-sm-3 strong {
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.row .col-sm-9 {
+  color: var(--text-color);
+}
+
+.text-muted {
+  color: var(--text-muted-color) !important;
+  line-height: 1.6;
+} 

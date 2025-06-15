@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using BookApp.API.Data;
 using BookApp.API.Models;
+using BookApp.API.DTOs;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace BookApp.API.Controllers
 {
@@ -19,72 +21,137 @@ namespace BookApp.API.Controllers
             _context = context;
         }
 
-        // GET: api/Books
+        /// <summary>
+        /// Get all books.
+        /// </summary>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
+        public async Task<ActionResult<IEnumerable<BookDTO>>> GetBooks()
         {
-            return await _context.Books
+            var books = await _context.Books
                 .Include(b => b.AddedByUser)
-                .Include(b => b.Quotes)
+                .Select(b => new BookDTO(
+                    b.Id,
+                    b.Title ?? string.Empty,
+                    b.Author ?? string.Empty,
+                    b.Description ?? string.Empty,
+                    b.PublishedDate,
+                    b.ISBN ?? string.Empty,
+                    b.CoverImageUrl,
+                    (b.AddedByUser != null ? b.AddedByUser.Username : null) ?? string.Empty,
+                    b.CreatedAt,
+                    b.UpdatedAt
+                ))
                 .ToListAsync();
+
+            return books;
         }
 
-        // GET: api/Books/5
+        /// <summary>
+        /// Get a book by id.
+        /// </summary>
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBook(int id)
+        public async Task<ActionResult<BookDTO>> GetBook(int id)
         {
             var book = await _context.Books
                 .Include(b => b.AddedByUser)
-                .Include(b => b.Quotes)
-                .FirstOrDefaultAsync(b => b.Id == id);
+                .Where(b => b.Id == id)
+                .Select(b => new BookDTO(
+                    b.Id,
+                    b.Title ?? string.Empty,
+                    b.Author ?? string.Empty,
+                    b.Description ?? string.Empty,
+                    b.PublishedDate,
+                    b.ISBN ?? string.Empty,
+                    b.CoverImageUrl,
+                    (b.AddedByUser != null ? b.AddedByUser.Username : null) ?? string.Empty,
+                    b.CreatedAt,
+                    b.UpdatedAt
+                ))
+                .FirstOrDefaultAsync();
 
             if (book == null)
-            {
-                return NotFound();
-            }
+                return NotFound(new { message = "Book not found" });
 
             return book;
         }
 
-        // POST: api/Books
+        /// <summary>
+        /// Create a new book.
+        /// </summary>
         [HttpPost]
-        public async Task<ActionResult<Book>> CreateBook(Book book)
+        public async Task<ActionResult<BookDTO>> CreateBook([FromBody] CreateBookDTO createBookDto)
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            book.AddedByUserId = userId;
-            book.CreatedAt = DateTime.UtcNow;
-            book.UpdatedAt = DateTime.UtcNow;
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "Invalid user" });
+
+            var book = new Book
+            {
+                Title = createBookDto.Title,
+                Author = createBookDto.Author,
+                Description = createBookDto.Description,
+                PublishedDate = createBookDto.PublishedDate,
+                ISBN = createBookDto.ISBN,
+                CoverImageUrl = createBookDto.CoverImageUrl,
+                AddedByUserId = userId,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
 
             _context.Books.Add(book);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetBook), new { id = book.Id }, book);
+            var createdBook = await _context.Books
+                .Include(b => b.AddedByUser)
+                .Where(b => b.Id == book.Id)
+                .Select(b => new BookDTO(
+                    b.Id,
+                    b.Title ?? string.Empty,
+                    b.Author ?? string.Empty,
+                    b.Description ?? string.Empty,
+                    b.PublishedDate,
+                    b.ISBN ?? string.Empty,
+                    b.CoverImageUrl,
+                    (b.AddedByUser != null ? b.AddedByUser.Username : null) ?? string.Empty,
+                    b.CreatedAt,
+                    b.UpdatedAt
+                ))
+                .FirstOrDefaultAsync();
+
+            return CreatedAtAction(nameof(GetBook), new { id = book.Id }, createdBook);
         }
 
-        // PUT: api/Books/5
+        /// <summary>
+        /// Update an existing book.
+        /// </summary>
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBook(int id, Book book)
+        public async Task<ActionResult<BookDTO>> UpdateBook(int id, [FromBody] UpdateBookDTO updateBookDto)
         {
-            if (id != book.Id)
-            {
-                return BadRequest();
-            }
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "Invalid user" });
+
             var existingBook = await _context.Books.FindAsync(id);
-
             if (existingBook == null)
-            {
-                return NotFound();
-            }
+                return NotFound(new { message = "Book not found" });
 
+            // If the book doesn't belong to the current user, transfer ownership
             if (existingBook.AddedByUserId != userId)
-            {
-                return Forbid();
-            }
+                existingBook.AddedByUserId = userId;
 
-            book.UpdatedAt = DateTime.UtcNow;
-            _context.Entry(existingBook).CurrentValues.SetValues(book);
+            existingBook.Title = updateBookDto.Title;
+            existingBook.Author = updateBookDto.Author;
+            existingBook.Description = updateBookDto.Description;
+            existingBook.PublishedDate = updateBookDto.PublishedDate;
+            existingBook.ISBN = updateBookDto.ISBN;
+            existingBook.CoverImageUrl = updateBookDto.CoverImageUrl;
+            existingBook.UpdatedAt = DateTime.UtcNow;
 
             try
             {
@@ -93,33 +160,64 @@ namespace BookApp.API.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!BookExists(id))
-                {
-                    return NotFound();
-                }
+                    return NotFound(new { message = "Book not found" });
                 else
-                {
                     throw;
+            }
+            catch (DbUpdateException ex)
+            {
+                // Check if it's a unique constraint violation
+                if (ex.InnerException?.Message?.Contains("UNIQUE constraint failed") == true)
+                {
+                    return BadRequest(new { message = "A book with this ISBN already exists. Please use a different ISBN." });
                 }
+                throw;
+            }
+            catch (Exception)
+            {
+                throw;
             }
 
-            return NoContent();
+            var updatedBook = await _context.Books
+                .Include(b => b.AddedByUser)
+                .Where(b => b.Id == id)
+                .Select(b => new BookDTO(
+                    b.Id,
+                    b.Title ?? string.Empty,
+                    b.Author ?? string.Empty,
+                    b.Description ?? string.Empty,
+                    b.PublishedDate,
+                    b.ISBN ?? string.Empty,
+                    b.CoverImageUrl,
+                    (b.AddedByUser != null ? b.AddedByUser.Username : null) ?? string.Empty,
+                    b.CreatedAt,
+                    b.UpdatedAt
+                ))
+                .FirstOrDefaultAsync();
+
+            return Ok(updatedBook);
         }
 
-        // DELETE: api/Books/5
+        /// <summary>
+        /// Delete a book.
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(int id)
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "Invalid user" });
+
             var book = await _context.Books.FindAsync(id);
 
             if (book == null)
-            {
-                return NotFound();
-            }
+                return NotFound(new { message = "Book not found" });
 
+            // If the book doesn't belong to the current user, transfer ownership first
             if (book.AddedByUserId != userId)
             {
-                return Forbid();
+                book.AddedByUserId = userId;
+                await _context.SaveChangesAsync();
             }
 
             _context.Books.Remove(book);
@@ -133,4 +231,4 @@ namespace BookApp.API.Controllers
             return _context.Books.Any(e => e.Id == id);
         }
     }
-} 
+}

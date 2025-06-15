@@ -19,12 +19,17 @@ namespace BookApp.API.Controllers
             _context = context;
         }
 
-        // GET: api/UserFavoriteBooks
+        /// <summary>
+        /// Get all favorite books for the current user.
+        /// </summary>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Book>>> GetFavoriteBooks()
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            return await _context.UserFavoriteBooks
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "Invalid user" });
+
+            var books = await _context.UserFavoriteBooks
                 .Where(ufb => ufb.UserId == userId)
                 .Include(ufb => ufb.Book)
                     .ThenInclude(b => b.AddedByUser)
@@ -32,26 +37,25 @@ namespace BookApp.API.Controllers
                     .ThenInclude(b => b.Quotes)
                 .Select(ufb => ufb.Book)
                 .ToListAsync();
+
+            return books;
         }
 
-        // POST: api/UserFavoriteBooks
+        /// <summary>
+        /// Add a book to the current user's favorites.
+        /// </summary>
         [HttpPost]
-        public async Task<ActionResult<UserFavoriteBook>> AddFavoriteBook(int bookId)
+        public async Task<IActionResult> AddFavoriteBook([FromQuery] int bookId)
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "Invalid user" });
 
-            // Kontrollera om boken redan är favorit
-            if (await _context.UserFavoriteBooks
-                .AnyAsync(ufb => ufb.UserId == userId && ufb.BookId == bookId))
-            {
-                return BadRequest("Boken är redan markerad som favorit");
-            }
+            if (await _context.UserFavoriteBooks.AnyAsync(ufb => ufb.UserId == userId && ufb.BookId == bookId))
+                return BadRequest(new { message = "The book is already marked as a favorite." });
 
-            // Kontrollera om boken existerar
             if (!await _context.Books.AnyAsync(b => b.Id == bookId))
-            {
-                return NotFound("Boken hittades inte");
-            }
+                return NotFound(new { message = "Book not found" });
 
             var userFavoriteBook = new UserFavoriteBook
             {
@@ -66,18 +70,21 @@ namespace BookApp.API.Controllers
             return CreatedAtAction(nameof(GetFavoriteBooks), new { id = userFavoriteBook.Id }, userFavoriteBook);
         }
 
-        // DELETE: api/UserFavoriteBooks/5
+        /// <summary>
+        /// Remove a book from the current user's favorites.
+        /// </summary>
         [HttpDelete("{bookId}")]
         public async Task<IActionResult> RemoveFavoriteBook(int bookId)
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "Invalid user" });
+
             var userFavoriteBook = await _context.UserFavoriteBooks
                 .FirstOrDefaultAsync(ufb => ufb.UserId == userId && ufb.BookId == bookId);
 
             if (userFavoriteBook == null)
-            {
-                return NotFound("Favoritboken hittades inte");
-            }
+                return NotFound(new { message = "Favorite book not found" });
 
             _context.UserFavoriteBooks.Remove(userFavoriteBook);
             await _context.SaveChangesAsync();
@@ -85,4 +92,4 @@ namespace BookApp.API.Controllers
             return NoContent();
         }
     }
-} 
+}

@@ -1,0 +1,38 @@
+.quote-card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  border: none;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  .badge {
+    font-size: 0.85rem;
+    padding: 0.4em 0.8em;
+    border-radius: 0.5rem;
+  }
+
+  .blockquote {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #343a40;
+  }
+
+  .blockquote-footer {
+    font-size: 0.9rem;
+    color: #6c757d;
+
+    cite {
+      font-style: normal;
+    }
+
+    i {
+      color: #007bff; /* Consistent with other icons */
+    }
+  }
+} 

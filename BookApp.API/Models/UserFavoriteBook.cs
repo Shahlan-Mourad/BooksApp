@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BookApp.API.Models
 {
+    /// <summary>
+    /// Represents a user's favorite book (many-to-many relationship).
+    /// </summary>
     public class UserFavoriteBook
     {
         [Key]
@@ -10,12 +13,12 @@ namespace BookApp.API.Models
 
         [ForeignKey("User")]
         public int UserId { get; set; }
-        public User User { get; set; } = null!;
+        public virtual User User { get; set; } = null!;
 
         [ForeignKey("Book")]
         public int BookId { get; set; }
-        public Book Book { get; set; } = null!;
+        public virtual Book Book { get; set; } = null!;
 
         public DateTime AddedAt { get; set; } = DateTime.UtcNow;
     }
-} 
+}

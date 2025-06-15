@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BookApp.API.Models
 {
+    /// <summary>
+    /// Represents a book entity in the system.
+    /// </summary>
     public class Book
     {
         [Key]
@@ -10,34 +13,35 @@ namespace BookApp.API.Models
 
         [Required]
         [StringLength(100)]
-        public string Title { get; set; }
+        public string Title { get; set; } = null!;
 
         [Required]
         [StringLength(100)]
-        public string Author { get; set; }
+        public string Author { get; set; } = null!;
 
         [StringLength(500)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         public DateTime PublishedDate { get; set; }
 
+        [Required]
         [StringLength(50)]
-        public string ISBN { get; set; }
+        public string ISBN { get; set; } = null!;
 
-        public string CoverImageUrl { get; set; }
+        public string? CoverImageUrl { get; set; }
 
-        // Relation till användare som lade till boken
+        // Relation to user who added the book
         [ForeignKey("AddedByUser")]
         public int AddedByUserId { get; set; }
-        public User AddedByUser { get; set; }
+        public virtual User AddedByUser { get; set; } = null!;
 
-        // Samling av citat från boken
-        public ICollection<Quote> Quotes { get; set; }
+        // Collection of quotes from the book
+        public virtual ICollection<Quote> Quotes { get; set; } = new List<Quote>();
 
-        // Samling av användare som har boken som favorit
-        public ICollection<UserFavoriteBook> FavoriteByUsers { get; set; }
+        // Collection of users who have the book as a favorite
+        public virtual ICollection<UserFavoriteBook> FavoriteByUsers { get; set; } = new List<UserFavoriteBook>();
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
     }
-} 
+}

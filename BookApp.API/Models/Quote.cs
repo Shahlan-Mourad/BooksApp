@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BookApp.API.Models
 {
+    /// <summary>
+    /// Represents a quote from a book.
+    /// </summary>
     public class Quote
     {
         [Key]
@@ -17,15 +20,15 @@ namespace BookApp.API.Models
 
         [ForeignKey("User")]
         public int UserId { get; set; }
-        public User User { get; set; } = null!;
+        public virtual User User { get; set; } = null!;
 
         [ForeignKey("Book")]
         public int BookId { get; set; }
-        public Book Book { get; set; } = null!;
+        public virtual Book Book { get; set; } = null!;
 
-        public bool IsFavorite { get; set; }
+        public bool IsFavorite { get; set; } = false;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
     }
-} 
+}

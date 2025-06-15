@@ -1,0 +1,67 @@
+.card {
+  border: none;
+  border-radius: 15px;
+}
+
+.card-header {
+  border-radius: 15px 15px 0 0 !important;
+}
+
+.form-control {
+  border-radius: 10px;
+  border: 2px solid #e9ecef;
+  transition: all 0.3s ease;
+  
+  &:focus {
+    border-color: #D0E3FF;
+    box-shadow: 0 0 0 0.2rem rgba(208, 227, 255, 0.5);
+  }
+}
+
+.alert {
+  border-radius: 10px;
+  border: none;
+}
+
+.form-text {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.register-container {
+  border-radius: 2.5rem !important; /* Matches rounded-5 */
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.form-floating {
+  position: relative;
+
+  .form-control {
+    border: none;
+    border-bottom: 1px solid #ced4da; /* Underline style */
+    border-radius: 0; /* Remove border radius for floating labels */
+    padding-left: 2.5rem; /* Space for icon */
+    padding-top: 1.5rem; /* Adjust padding for floating label */
+    padding-bottom: 0.5rem;
+
+    &:focus {
+      box-shadow: none;
+      border-color: #D0E3FF;
+    }
+  }
+
+  > label {
+    padding-left: 2.5rem; /* Align label with input text */
+    color: #6c757d; /* Softer label color */
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    pointer-events: none;
+    z-index: 2;
+  }
+} 

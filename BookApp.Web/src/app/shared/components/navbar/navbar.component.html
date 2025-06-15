@@ -1,0 +1,82 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container">
+    <!-- Brand -->
+    <a class="navbar-brand" routerLink="/books">
+      <fa-icon [icon]="faBook" class="me-2"></fa-icon>BookApp
+    </a>
+
+    <!-- Mobile toggle button -->
+    <button 
+      class="navbar-toggler" 
+      type="button" 
+      (click)="toggleMenu()"
+      [attr.aria-expanded]="!isMenuCollapsed"
+      aria-controls="navbarNav" 
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navigation items -->
+    <div class="collapse navbar-collapse" [class.show]="!isMenuCollapsed" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <!-- Main navigation items can go here if needed -->
+      </ul>
+
+      <!-- User section -->
+      <ul class="navbar-nav">
+        <li class="nav-item dropdown" *ngIf="isAuthenticated">
+          <a 
+            class="nav-link dropdown-toggle" 
+            href="#" 
+            role="button" 
+            data-bs-toggle="dropdown" 
+            aria-expanded="false"
+          >
+            <fa-icon [icon]="faUser" class="me-1"></fa-icon>
+            {{ getDisplayName() }}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item" routerLink="/books" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+                <fa-icon [icon]="faBook" class="me-2"></fa-icon>Books
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" routerLink="/books/add">
+                <fa-icon [icon]="faPlus" class="me-2"></fa-icon>Add Book
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item" routerLink="/profile">
+                <fa-icon [icon]="faUserCircle" class="me-2"></fa-icon>Profile
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" routerLink="/quotes">
+                <fa-icon [icon]="faQuoteLeft" class="me-2"></fa-icon>My Quotes
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item" href="#" (click)="logout()">
+                <fa-icon [icon]="faSignOutAlt" class="me-2"></fa-icon>Log out
+              </a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item" *ngIf="!isAuthenticated">
+          <a class="nav-link" routerLink="/login" routerLinkActive="active">
+            <fa-icon [icon]="faSignInAlt" class="me-1"></fa-icon>Log in
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="!isAuthenticated">
+          <a class="nav-link" routerLink="/register" routerLinkActive="active">
+            <fa-icon [icon]="faUserPlus" class="me-1"></fa-icon>Register
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav> 
