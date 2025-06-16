@@ -31,7 +31,7 @@ jobs:
           app_location: "./BookApp.Web" # App source code path
           output_location: "dist/book-app-web/browser" # Built app content directory - optional
           app_build_command: "npm run build" # Build command for the app
-          config_file_location: "./staticwebapp.config.json" # Explicitly tell SWA where to find the config file
+          config_file_location: "." # Explicitly tell SWA where to find the config file in the repo root
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
