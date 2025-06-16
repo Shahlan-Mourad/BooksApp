@@ -45,7 +45,11 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularDevServer",
         builder => builder
-            .WithOrigins("http://localhost:4200")  // Angular standard port
+            .WithOrigins(
+                "http://localhost:4200",  // Angular development server
+                "https://gentle-mud-08422c603.6.azurestaticapps.net",  // Azure Static Web Apps
+                "https://*.azurestaticapps.net"  // All Azure Static Web Apps subdomains
+            )
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials());
